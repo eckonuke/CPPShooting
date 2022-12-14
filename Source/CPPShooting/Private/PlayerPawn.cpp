@@ -3,6 +3,11 @@
 
 #include "PlayerPawn.h"
 #include <Components/BoxComponent.h>
+#include <Engine/StaticMesh.h>
+#include <Components/ArrowComponent.h>
+#include "Bullet.h"
+#include <Engine/Scene.h>
+
 
 
 // Sets default values
@@ -32,8 +37,7 @@ APlayerPawn::APlayerPawn()
 	if (tempMesh.Succeeded()) {//경로에 있는 파일을 읽어오는데 성공했니?
 		compMesh->SetStaticMesh(tempMesh.Object);//성공했다면 StaticMesh의 Object를 경로에 있는 object로 설정
 	}
-	
-	
+
 }
 
 // Called when the game starts or when spawned
@@ -52,7 +56,8 @@ void APlayerPawn::Tick(float DeltaTime)
 	//해당 방향이 Normalize할수 있도록 해준다  
 	dir.Normalize();
 	
-	/*Vector 구하는 다른 방법
+	/*
+	Vector 구하는 다른 방법
 	FVector vhori = h * GetActorRightVector();
 	FVector vvert = v * GetActorUpVector();
 	FVector dir = vhori + vvert;
@@ -61,7 +66,8 @@ void APlayerPawn::Tick(float DeltaTime)
 	//계속 오른쪽으로 이동하고 싶다
 	// P = P0 + vt
 	FVector p0 = GetActorLocation();
-	FVector p = p0 + dir * speed * DeltaTime;
+	FVector p = p0 + dir * speed * DeltaTime;//dir.GetSafeNormal()
+	
 	SetActorLocation(p);
 }
 
@@ -71,24 +77,36 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	//BindAction -> 버튼을 입력했냐 안했냐
 	//Horizontal Binding
-	PlayerInputComponent->BindAxis("Horizontal", this, &APlayerPawn::MoveHorizontal);
+	PlayerInputComponent->BindAxis(TEXT("Horizontal"), this, &APlayerPawn::MoveHorizontal);
 	//Vertical Binding
-	PlayerInputComponent->BindAxis("Vertical", this, &APlayerPawn::MoveVertical);
+	PlayerInputComponent->BindAxis(TEXT("Vertical"), this, &APlayerPawn::MoveVertical);
+	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &APlayerPawn::InputFire);
 }
 
 //플레이어가 Horizontal에 입력한 값을 받는다
 void APlayerPawn::MoveHorizontal(float value) {
 	//입력된 값을 h에 저장한다
 	h = value;
-	//입력이 되는지 안되는지를 LOG에서 확인한다
-	UE_LOG(LogTemp, Warning, TEXT("Horizontal: %f"), value)
+	////입력이 되는지 안되는지를 LOG에서 확인한다
+	//UE_LOG(LogTemp, Warning, TEXT("Horizontal: %f"), value)
 }
 
 //플레이어가 Vertical에 입력한 값을 받는다
 void APlayerPawn::MoveVertical(float value) {
 	//입력된 값을 v에 저장한다
 	v = value;
-	//입력이 되는지 안되는지를 LOG에서 확인한다
-	UE_LOG(LogTemp, Warning, TEXT("Vertical: %f"), value)
+	////입력이 되는지 안되는지를 LOG에서 확인한다
+	//UE_LOG(LogTemp, Warning, TEXT("Vertical: %f"), value)
+}
+
+	/*
+	* 1. 스페이스바를 누르면
+	* 2. 총알공장에서 총알을 만든다
+	* 3. 위치, 회전값을 세팅한다
+	*/
+void APlayerPawn::InputFire() {
+	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(bulletFactory);
+	bullet->SetActorLocation(GetActorLocation());
+	bullet->SetActorRotation(GetActorRotation());
 }
 

@@ -28,12 +28,15 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	//player speed
+	UPROPERTY(EditAnywhere)
 	float speed = 500;
 
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* compBox;
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* compMesh;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ABullet> bulletFactory;
 
 private:
 	//사용자의 입력값을 받는 변수
@@ -43,4 +46,6 @@ private:
 	//사용자의 입력을 처리해주는 함수
 	void MoveHorizontal(float value);
 	void MoveVertical(float value);
+	//총알 발사 입력 처리 함수
+	void InputFire();
 };
