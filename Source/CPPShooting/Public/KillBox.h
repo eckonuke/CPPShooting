@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Enemy.generated.h"
+#include "KillBox.generated.h"
 
 UCLASS()
-class CPPSHOOTING_API AEnemy : public AActor
+class CPPSHOOTING_API AKillBox : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AEnemy();
+	AKillBox();
 
 protected:
 	// Called when the game starts or when spawned
@@ -22,25 +22,10 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	// Event when overlap
+	//Actor BeginOverlap
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
-	FVector dir;
-
-	//Mesh Component
-	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* meshComp;
-	//Box Component
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* boxComp;
-	//ÀÌµ¿¼Óµµ
-	UPROPERTY(EditAnywhere)
-	float speed = 400;
-	//Æø¹ßÈ¿°ú
-	UPROPERTY(EditAnywhere)
-	class UParticleSystem* explodeFactory;
-	//ÆøÆÈÀ½
-	UPROPERTY(EditAnywhere)
-	class USoundBase* explodeSound;
 
 };

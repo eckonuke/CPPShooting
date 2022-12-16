@@ -26,6 +26,8 @@ APlayerPawn::APlayerPawn()
 
 	//compBox의 Box Extent 사이즈를 (50, 50, 50) 으로 조절한다
 	compBox->SetBoxExtent(FVector(50, 50, 50));//FVector(50)으로 해도 x,y,z에 같은 값이 알아서 지정된다
+	//Collision Preset을 PlayerPreset으로 하자
+	compBox->SetCollisionProfileName(TEXT("PlayerPreset"));
 
 	//Static Mesh 만들기
 	compMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH"));
@@ -37,7 +39,7 @@ APlayerPawn::APlayerPawn()
 	if (tempMesh.Succeeded()) {//경로에 있는 파일을 읽어오는데 성공했니?
 		compMesh->SetStaticMesh(tempMesh.Object);//성공했다면 StaticMesh의 Object를 경로에 있는 object로 설정
 	}
-
+	compMesh->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
 // Called when the game starts or when spawned
@@ -105,8 +107,8 @@ void APlayerPawn::MoveVertical(float value) {
 	* 3. 위치, 회전값을 세팅한다
 	*/
 void APlayerPawn::InputFire() {
-	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(bulletFactory);
-	bullet->SetActorLocation(GetActorLocation());
-	bullet->SetActorRotation(GetActorRotation());
+	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(bulletFactory, GetActorLocation(), GetActorRotation());
+	/*bullet->SetActorLocation(GetActorLocation());
+	bullet->SetActorRotation(GetActorRotation());*/
 }
 

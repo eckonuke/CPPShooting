@@ -17,12 +17,17 @@ ABullet::ABullet()
 	SetRootComponent(boxComp);
 	//box의 초기 크기 설정
 	boxComp->SetBoxExtent(FVector(25.0f, 25.0f, 50.0f));
+	//Collision Preset을 Bullet Preset으로 한다
+	boxComp->SetCollisionProfileName(TEXT("BulletPreset"));
+
 
 	//static mesh 추가
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh Component"));
 	//static mesh를 box component 하위로 추가 
 	meshComp->SetupAttachment(boxComp);
 	meshComp->SetRelativeScale3D(FVector(0.5f, 0.5f, 1.0f));
+	//Collision Preset을 NoCollision으로 한다
+	meshComp->SetCollisionProfileName(TEXT("NoCollision"));
 	
 }
 
