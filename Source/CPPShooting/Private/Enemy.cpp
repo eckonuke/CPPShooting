@@ -97,8 +97,10 @@ void AEnemy::Tick(float DeltaTime)
 
 void AEnemy::NotifyActorBeginOverlap(AActor* OtherActor) {
 	Super::NotifyActorBeginOverlap(OtherActor);
-
+	
 	//¸¸¾à¿¡ ºÎµúÈù ³ðÀÇ ÀÌ¸§ÀÌ Bullet Æ÷ÇÔÇÏ°í ÀÖ´Ù¸é
+	//OtherActor->GetName().Contains(TEXT("Bullet")) || OtherActor->GetName().Contains(TEXT("Player"))
+	//APlayerPawn* player = Cast<APlayerPawn>(OtherActor);
 	if (OtherActor->GetName().Contains(TEXT("Bullet")) || OtherActor->GetName().Contains(TEXT("Player"))) {
 		//1. ºÎµúÈù ³ð ÆÄ±«ÇÏÀÚ
 		OtherActor->Destroy();

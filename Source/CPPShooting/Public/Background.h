@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Bullet.generated.h"
+#include "Background.generated.h"
 
 UCLASS()
-class CPPSHOOTING_API ABullet : public AActor
+class CPPSHOOTING_API ABackground : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ABullet();
+	ABackground();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,14 +23,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//총알 속도 지정
+	//Static Mesh 안에 Plane이라는 모양을 설정해준다
 	UPROPERTY(EditAnywhere)
-	float speed = 1000;
-	
-	//총알 box component
+	class UStaticMeshComponent* compMesh;
 	UPROPERTY(EditAnywhere)
-	class UBoxComponent* boxComp;
-	//총알 static mesh component
-	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* meshComp;
+	float speed = 500;
 };

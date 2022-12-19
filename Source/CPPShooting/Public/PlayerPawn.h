@@ -30,13 +30,22 @@ public:
 	//player speed
 	UPROPERTY(EditAnywhere)
 	float speed = 500;
-
+	//delay Time
+	UPROPERTY(EditAnywhere)
+	float delayTime = 0.3f;
+	//Current Time
+	UPROPERTY(EditAnywhere)
+	float currTime = 0;
+	//Box Component
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* compBox;
+	//Mesh Component
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* compMesh;
+	//bulletFactory
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABullet> bulletFactory;
+
 
 private:
 	//사용자의 입력값을 받는 변수

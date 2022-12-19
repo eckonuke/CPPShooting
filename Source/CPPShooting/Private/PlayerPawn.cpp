@@ -71,6 +71,12 @@ void APlayerPawn::Tick(float DeltaTime)
 	FVector p = p0 + dir * speed * DeltaTime;//dir.GetSafeNormal()
 	
 	SetActorLocation(p);
+
+	currTime += DeltaTime;
+	if (currTime >= delayTime) {
+		InputFire();
+		currTime = 0;
+	}
 }
 
 // Called to bind functionality to input

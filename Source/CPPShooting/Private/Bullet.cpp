@@ -47,7 +47,6 @@ void ABullet::Tick(float DeltaTime)
 	//단지 플레이어는 입력 기반의 움직임이고 총알은 그냥 한 방향으로 움직인다
 	FVector p0 = GetActorLocation();
 	FVector p = p0 + GetActorUpVector() * DeltaTime * speed;
-
 	SetActorLocation(p);
 }
 
