@@ -23,6 +23,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void setActive(bool isActive);
+
 	//총알 속도 지정
 	UPROPERTY(EditAnywhere)
 	float speed = 1000;

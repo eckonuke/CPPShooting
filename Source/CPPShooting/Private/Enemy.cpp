@@ -7,6 +7,8 @@
 #include <Kismet/GameplayStatics.h>
 #include "PlayerPawn.h"
 #include <Particles/ParticleSystem.h>
+#include "Bullet.h"
+#include "../CPPShootingGameModeBase.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -62,12 +64,12 @@ void AEnemy::BeginPlay()
 	//랜덤한 값을 뽑는다 (1, 100)
 	//만약에 랜덤한 값이 50보다 작으면(50%) 플레이어를 찾는다
 	int32 rand = FMath::RandRange(1, 100);
+	//1. 플레이어를 찾자
+	AActor* player = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerPawn::StaticClass());
+	playerPawn = Cast<APlayerPawn>(player);
 
 	if (rand < 50) {
-		//1. 플레이어를 찾자
-		AActor* player = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerPawn::StaticClass());
 		//2. 플레이어를 향하는 방향을 구하자 (타겟 - 나)
-
 		//만약에 플레이어가 존재한다면
 		if (player != nullptr) {
 			//방향을 구한다
@@ -97,13 +99,30 @@ void AEnemy::Tick(float DeltaTime)
 
 void AEnemy::NotifyActorBeginOverlap(AActor* OtherActor) {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	
+
 	//만약에 부딪힌 놈의 이름이 Bullet 포함하고 있다면
 	//OtherActor->GetName().Contains(TEXT("Bullet")) || OtherActor->GetName().Contains(TEXT("Player"))
 	//APlayerPawn* player = Cast<APlayerPawn>(OtherActor);
-	if (OtherActor->GetName().Contains(TEXT("Bullet")) || OtherActor->GetName().Contains(TEXT("Player"))) {
-		//1. 부딪힌 놈 파괴하자
-		OtherActor->Destroy();
+	if (OtherActor->GetName().Contains(TEXT("Bullet"))) {
+		//총알을 비활성화
+		ABullet* bullet = Cast<ABullet>(OtherActor);
+		bullet->setActive(false);
+		playerPawn->mag.Add(bullet);
+		//총알을 탄창에 넣는다
+
+		//폭발효과 Effect를 생성한다
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explodeFactory, GetActorLocation(), GetActorRotation());
+		//터질때 사운드 Effect 추가
+		UGameplayStatics::PlaySound2D(GetWorld(), explodeSound);
+
+		//AcCPPShootingGameModeBase를 가져오자
+		AGameModeBase* mode = GetWorld()->GetAuthGameMode();
+		//점수를 증가 시킨다
+		ACPPShootingGameModeBase* currMode = Cast<ACPPShootingGameModeBase>(mode);
+		currMode->AddScore(2);
+	}
+	if (OtherActor->GetName().Contains(TEXT("Player"))) {
+		playerPawn->Destroy();
 		//폭발효과 Effect를 생성한다
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explodeFactory, GetActorLocation(), GetActorRotation());
 		//터질때 사운드 Effect 추가

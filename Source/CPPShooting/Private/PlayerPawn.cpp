@@ -14,7 +14,7 @@
 // 생성자
 APlayerPawn::APlayerPawn()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	//컴포넌트는 생성자에서 만든다
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -46,7 +46,15 @@ APlayerPawn::APlayerPawn()
 void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	for (int32 i = 0; i < bulletFirstCount; i++) {
+		//총알을 생성한다
+		ABullet* bullet = GetWorld()->SpawnActor<ABullet>(bulletFactory, GetActorLocation(), GetActorRotation());
+		//생성된 총알을 비활성화 하자
+		bullet->setActive(false);
+		//생성된 총알을 mag에 추가한다
+		mag.Add(bullet);
+	}
 }
 
 // Called every frame
@@ -57,24 +65,24 @@ void APlayerPawn::Tick(float DeltaTime)
 	FVector dir = FVector(0, h, v);
 	//해당 방향이 Normalize할수 있도록 해준다  
 	dir.Normalize();
-	
+
 	/*
 	Vector 구하는 다른 방법
 	FVector vhori = h * GetActorRightVector();
 	FVector vvert = v * GetActorUpVector();
 	FVector dir = vhori + vvert;
 	*/
-	
+
 	//계속 오른쪽으로 이동하고 싶다
 	// P = P0 + vt
 	FVector p0 = GetActorLocation();
 	FVector p = p0 + dir * speed * DeltaTime;//dir.GetSafeNormal()
-	
+
 	SetActorLocation(p);
 
 	currTime += DeltaTime;
 	if (currTime >= delayTime) {
-		InputFire();
+		//InputFire();
 		currTime = 0;
 	}
 }
@@ -107,14 +115,28 @@ void APlayerPawn::MoveVertical(float value) {
 	//UE_LOG(LogTemp, Warning, TEXT("Vertical: %f"), value)
 }
 
-	/*
-	* 1. 스페이스바를 누르면
-	* 2. 총알공장에서 총알을 만든다
-	* 3. 위치, 회전값을 세팅한다
-	*/
+/*
+* 1. 스페이스바를 누르면
+* 2. 총알공장에서 총알을 만든다
+* 3. 위치, 회전값을 세팅한다
+*/
 void APlayerPawn::InputFire() {
-	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(bulletFactory, GetActorLocation(), GetActorRotation());
-	/*bullet->SetActorLocation(GetActorLocation());
-	bullet->SetActorRotation(GetActorRotation());*/
-}
+	//총알을 발사
 
+	//1. 위치를 지정
+	//2. 활성화
+	// 만약에 mag의 갯수가 0보다 클 때
+	if (mag.Num() > 0) {
+		//총알의 위치, 회전 값을 Player 값으로 세팅한다
+		mag[0]->SetActorLocation(GetActorLocation());
+		mag[0]->SetActorRotation(GetActorRotation());
+		//탄창에서 하나씩 빼서 총알을 활성화 시킨다
+		mag[0]->setActive(true);
+		//탄창에서 뺀다
+		mag.RemoveAt(0);
+	}
+	else {
+		//총알공장에서 총알을 만든다
+		ABullet* bullet = GetWorld()->SpawnActor<ABullet>(bulletFactory, GetActorLocation(), GetActorRotation());
+	}
+}

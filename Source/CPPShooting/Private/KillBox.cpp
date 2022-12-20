@@ -3,11 +3,14 @@
 
 #include "KillBox.h"
 #include <Components/BoxComponent.h>
+#include "Bullet.h"
+#include <Kismet/GameplayStatics.h>
+#include "PlayerPawn.h"
 
 // Sets default values
 AKillBox::AKillBox()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BOX"));
 	SetRootComponent(boxComp);
@@ -19,7 +22,7 @@ AKillBox::AKillBox()
 void AKillBox::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -32,5 +35,23 @@ void AKillBox::Tick(float DeltaTime)
 void AKillBox::NotifyActorBeginOverlap(AActor* OtherActor) {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	OtherActor->Destroy();
+	if (OtherActor->GetName().Contains(TEXT("Bullet"))) {
+		//부딪힌 놈이 Bullet 이면 
+		//OtherActor를 Bullet으로 형변환
+		ABullet* bullet = Cast<ABullet>(OtherActor);
+		// 비활성화 하자
+		bullet->setActive(false);
+		// APlyerPawn을 찾자
+		AActor* actor = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerPawn::StaticClass());
+		APlayerPawn* player = Cast<APlayerPawn>(actor);
+		// 탄창에 다시 넣자
+		player->mag.Add(bullet);
+	}
+	else {// 그렇지 않으면 파괴하자
+
+		//부딪힌 놈을 파괴하자
+		OtherActor->Destroy();
+
+	}
+
 }

@@ -42,5 +42,7 @@ public:
 	//ÆøÆÈÀ½
 	UPROPERTY(EditAnywhere)
 	class USoundBase* explodeSound;
+	UPROPERTY(EditAnywhere)
+	class APlayerPawn* playerPawn;
 
 };

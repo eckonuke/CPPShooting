@@ -45,8 +45,13 @@ public:
 	//bulletFactory
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABullet> bulletFactory;
-
-
+	//발사되지 않은 총알 탄창
+	UPROPERTY(EditAnywhere)
+	TArray<class ABullet*> mag;
+	TArray<class ABullet*> arrayFired;
+	//탄창 초기 갯수
+	UPROPERTY(EditAnywhere)
+	int32 bulletFirstCount = 10;
 private:
 	//사용자의 입력값을 받는 변수
 	float h;

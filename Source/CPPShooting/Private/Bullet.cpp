@@ -43,6 +43,12 @@ void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//만약에 mesh가 안보이는 상태라면 (비활성화 상태)
+	if (meshComp->IsVisible() == false) {
+		//함수를 나간다
+		return;
+	}
+
 	//로직 자체는 플레이어가 이동하는 방식과 같다.
 	//단지 플레이어는 입력 기반의 움직임이고 총알은 그냥 한 방향으로 움직인다
 	FVector p0 = GetActorLocation();
@@ -50,3 +56,18 @@ void ABullet::Tick(float DeltaTime)
 	SetActorLocation(p);
 }
 
+void ABullet::setActive(bool isActive) {
+	if (isActive == true) {
+		//보이게 한다
+		meshComp->SetVisibility(true);
+		//충돌 할 수 있게 하자
+		boxComp->SetCollisionProfileName(TEXT("BulletPreset"));
+	}
+	else {
+		//생성된 총알을 보이지 않게 한다
+		meshComp->SetVisibility(false);
+		//생선된 총알의 충돌 옵션을 NoCollision으로 한다
+		boxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		
+	}
+}
