@@ -48,7 +48,6 @@ public:
 	//발사되지 않은 총알 탄창
 	UPROPERTY(EditAnywhere)
 	TArray<class ABullet*> mag;
-	TArray<class ABullet*> arrayFired;
 	//탄창 초기 갯수
 	UPROPERTY(EditAnywhere)
 	int32 bulletFirstCount = 10;

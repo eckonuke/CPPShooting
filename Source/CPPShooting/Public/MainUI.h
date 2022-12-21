@@ -14,8 +14,18 @@ class CPPSHOOTING_API UMainUI : public UUserWidget
 {
 	GENERATED_BODY()
 	
+protected:
+	//Actor의 beginPlay와 같다
+	virtual void NativeConstruct() override;
+
 public:
+
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UTextBlock* currScore;
+	class UTextBlock* currScoreUI;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UTextBlock* bestScoreUI;
+
+	void UpdateCurrScoreUI(int32 score);
+	void UpdateBestScoreUI(int32 best);
 
 };
