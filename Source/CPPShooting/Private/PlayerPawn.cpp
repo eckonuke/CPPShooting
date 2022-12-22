@@ -54,6 +54,9 @@ void APlayerPawn::BeginPlay()
 		bullet->setActive(false);
 		//생성된 총알을 mag에 추가한다
 		mag.Add(bullet);
+
+		//파괴될 때 호출할 수 있는 함수 등록(델리게이트 이용!)
+		bullet->onDestroyBullet.AddDynamic(this, &APlayerPawn::AddBullet);
 	}
 }
 
@@ -138,5 +141,12 @@ void APlayerPawn::InputFire() {
 	else {
 		//총알공장에서 총알을 만든다
 		ABullet* bullet = GetWorld()->SpawnActor<ABullet>(bulletFactory, GetActorLocation(), GetActorRotation());
+		//파괴될 때 호출할 수 있는 함수 등록(델리게잍 이용!)
+		bullet->onDestroyBullet.AddDynamic(this, &APlayerPawn::AddBullet);
 	}
+}
+
+void APlayerPawn::AddBullet(class ABullet* bullet) {
+	UE_LOG(LogTemp, Warning, TEXT("AddBullet"));
+	mag.Add(bullet);
 }

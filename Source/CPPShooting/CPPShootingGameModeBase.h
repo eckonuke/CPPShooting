@@ -23,13 +23,19 @@ public:
 	void AddScore(int32 value);
 	void SaveBestScore();
 	void LoadBestScore();
-	
+	void ShowGameOverUI();
+
 	void ShuffleStudy();
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UMainUI> mainWidget;
 	UPROPERTY()
 	class UMainUI* mainUI;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UGameOverUI> gameOverWidget;
+	UPROPERTY()
+	class UGameOverUI* gameOverUI;
+
 private:
 	//현재 점수
 	int32 currScore = 0;

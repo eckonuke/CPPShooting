@@ -84,6 +84,9 @@ void AEnemy::BeginPlay()
 	else {
 		dir = -GetActorUpVector();
 	}
+
+	//충돌 오버랩 될 때 호출 되는 함수 등록
+	boxComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlap);
 }
 
 // Called every frame
@@ -100,33 +103,50 @@ void AEnemy::Tick(float DeltaTime)
 void AEnemy::NotifyActorBeginOverlap(AActor* OtherActor) {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
+	
+}
+
+void AEnemy::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
+	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+	//AcCPPShootingGameModeBase를 가져오자
+	//AGameModeBase* mode = GetWorld()->GetAuthGameMode();
+	//ACPPShootingGameModeBase* currMode = Cast<ACPPShootingGameModeBase>(mode);
+
+	//게임모드를 바로 가져올수 있다
+	ACPPShootingGameModeBase* currMode = GetWorld()->GetAuthGameMode<ACPPShootingGameModeBase>();
+
 	//만약에 부딪힌 놈의 이름이 Bullet 포함하고 있다면
-	//OtherActor->GetName().Contains(TEXT("Bullet")) || OtherActor->GetName().Contains(TEXT("Player"))
+	//캐스팅을 해서 확인하는 방법도 있다
 	//APlayerPawn* player = Cast<APlayerPawn>(OtherActor);
 	if (OtherActor->GetName().Contains(TEXT("Bullet"))) {
 		//총알을 비활성화
 		ABullet* bullet = Cast<ABullet>(OtherActor);
 		bullet->setActive(false);
-		playerPawn->mag.Add(bullet);
 		//총알을 탄창에 넣는다
+		bullet->onDestroyBullet.Broadcast(bullet);
+		//playerPawn->mag.Add(bullet);
 
 		//폭발효과 Effect를 생성한다
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explodeFactory, GetActorLocation(), GetActorRotation());
 		//터질때 사운드 Effect 추가
 		UGameplayStatics::PlaySound2D(GetWorld(), explodeSound);
 
-		//AcCPPShootingGameModeBase를 가져오자
-		AGameModeBase* mode = GetWorld()->GetAuthGameMode();
-		//점수를 증가 시킨다
-		ACPPShootingGameModeBase* currMode = Cast<ACPPShootingGameModeBase>(mode);
 		currMode->AddScore(2);
 	}
-	if (OtherActor->GetName().Contains(TEXT("Player"))) {
+	else if (OtherActor->GetName().Contains(TEXT("Player"))) {
+		//플레이어와 충돌하면 플레이어를 삭제한다
 		playerPawn->Destroy();
 		//폭발효과 Effect를 생성한다
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explodeFactory, GetActorLocation(), GetActorRotation());
 		//터질때 사운드 Effect 추가
 		UGameplayStatics::PlaySound2D(GetWorld(), explodeSound);
+
+		//게임 종료화면 보여준다
+		currMode->ShowGameOverUI();
+		//게임 일시정지
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		//마우스 커서를 보여준다
+		GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
 	}
 	//2. 나를 파괴하자
 	Destroy();

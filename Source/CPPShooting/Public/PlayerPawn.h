@@ -61,4 +61,7 @@ private:
 	void MoveVertical(float value);
 	//총알 발사 입력 처리 함수
 	void InputFire();
+	
+	UFUNCTION()
+	void AddBullet(class ABullet* bullet);
 };

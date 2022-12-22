@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "MainUI.generated.h"
 
+DECLARE_DELEGATE(FFirstDel);
+DECLARE_DELEGATE_OneParam(FSecondDel, int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FThirdDel, int32);
 /**
  * 
  */
@@ -28,4 +31,19 @@ public:
 	void UpdateCurrScoreUI(int32 score);
 	void UpdateBestScoreUI(int32 best);
 
+public:
+	//Delegate ¿¬½À
+	FFirstDel onFirstDel;
+	UFUNCTION()
+	void FuncFirstDel();
+
+	FSecondDel onSecondDel;
+	UFUNCTION()
+	void FuncSecondDel(int32 number);
+
+	FThirdDel onThirdDel;
+	UFUNCTION()
+	void FuncThirdDel(int32 number);
+	UFUNCTION()
+	void FuncThirdDel2(int32 number);
 };
