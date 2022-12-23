@@ -36,9 +36,9 @@ public:
 	UPROPERTY()
 	class UGameOverUI* gameOverUI;
 
-private:
 	//현재 점수
 	int32 currScore = 0;
 	//최고 점수
 	int32 bestScore = 0;
+private:
 };

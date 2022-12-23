@@ -7,6 +7,7 @@
 #include <Components/ArrowComponent.h>
 #include "Bullet.h"
 #include <Engine/Scene.h>
+#include "../CPPShootingGameModeBase.h"
 
 
 
@@ -83,10 +84,14 @@ void APlayerPawn::Tick(float DeltaTime)
 
 	SetActorLocation(p);
 
-	currTime += DeltaTime;
-	if (currTime >= delayTime) {
-		//InputFire();
-		currTime = 0;
+	if (FireCount < 8) {
+		currTime += DeltaTime;
+		if (currTime >= delayTime) {
+			//InputFire();
+			MakeBullet(GetActorLocation(), FRotator(0, 0, 45 * FireCount));
+			FireCount++;
+			currTime = 0;
+		}
 	}
 }
 
@@ -100,6 +105,8 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	//Vertical Binding
 	PlayerInputComponent->BindAxis(TEXT("Vertical"), this, &APlayerPawn::MoveVertical);
 	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &APlayerPawn::InputFire);
+	PlayerInputComponent->BindAction(TEXT("Skill1"), IE_Pressed, this, &APlayerPawn::InputSkill);
+	PlayerInputComponent->BindAction(TEXT("Skill2"), IE_Pressed, this, &APlayerPawn::InputSkill2);
 }
 
 //플레이어가 Horizontal에 입력한 값을 받는다
@@ -141,6 +148,49 @@ void APlayerPawn::InputFire() {
 	else {
 		//총알공장에서 총알을 만든다
 		ABullet* bullet = GetWorld()->SpawnActor<ABullet>(bulletFactory, GetActorLocation(), GetActorRotation());
+		//파괴될 때 호출할 수 있는 함수 등록(델리게잍 이용!)
+		bullet->onDestroyBullet.AddDynamic(this, &APlayerPawn::AddBullet);
+	}
+}
+
+void APlayerPawn::InputSkill() {
+	ACPPShootingGameModeBase* currMode = GetWorld()->GetAuthGameMode<ACPPShootingGameModeBase>();
+	int32 count = currMode->currScore / 5 + 1;
+	FVector bulletPos;
+	bulletCount = count;
+	for (int i = 0; i < bulletCount; i++) {
+		bulletPos = GetActorLocation();
+		bulletPos.Y += (i * bulletGap) - (bulletCount - 1) * (bulletGap / 2);
+		MakeBullet(bulletPos, GetActorRotation());
+	}
+}
+
+void APlayerPawn::InputSkill2() {
+	FireCount = 0;
+	return;
+	FRotator rotation = GetActorRotation();
+	FVector position = GetActorLocation();
+	int32 count = 8, angle = 360 / count;
+	for (int i = 0; i < count; i++) {
+		rotation.Roll = i * angle;
+		MakeBullet(position, rotation);
+	}
+}
+
+void APlayerPawn::MakeBullet(FVector pos, FRotator rot) {
+	//총알을 발사
+	if (mag.Num() > 0) {
+		//총알의 위치, 회전 값을 Player 값으로 세팅한다
+		mag[0]->SetActorLocation(pos);
+		mag[0]->SetActorRotation(rot);
+		//탄창에서 하나씩 빼서 총알을 활성화 시킨다
+		mag[0]->setActive(true);
+		//탄창에서 뺀다
+		mag.RemoveAt(0);
+	}
+	else {
+		//총알공장에서 총알을 만든다
+		ABullet* bullet = GetWorld()->SpawnActor<ABullet>(bulletFactory, pos, rot);
 		//파괴될 때 호출할 수 있는 함수 등록(델리게잍 이용!)
 		bullet->onDestroyBullet.AddDynamic(this, &APlayerPawn::AddBullet);
 	}

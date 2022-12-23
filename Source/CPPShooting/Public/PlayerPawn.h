@@ -32,7 +32,7 @@ public:
 	float speed = 500;
 	//delay Time
 	UPROPERTY(EditAnywhere)
-	float delayTime = 0.3f;
+	float delayTime = 0.2f;
 	//Current Time
 	UPROPERTY(EditAnywhere)
 	float currTime = 0;
@@ -51,6 +51,10 @@ public:
 	//탄창 초기 갯수
 	UPROPERTY(EditAnywhere)
 	int32 bulletFirstCount = 10;
+
+	FRotator rotator = FRotator(0, 0, 0);
+	int32 FireCount=10;
+
 private:
 	//사용자의 입력값을 받는 변수
 	float h;
@@ -61,7 +65,14 @@ private:
 	void MoveVertical(float value);
 	//총알 발사 입력 처리 함수
 	void InputFire();
-	
+	UPROPERTY(EditAnywhere)
+	int32 bulletCount = 1;
+	UPROPERTY(EditAnywhere)
+	float bulletGap = 100;
+	void InputSkill();
+	void InputSkill2();
+	void MakeBullet(FVector pos, FRotator rot);
+
 	UFUNCTION()
 	void AddBullet(class ABullet* bullet);
 };
