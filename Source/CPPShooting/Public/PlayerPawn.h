@@ -73,6 +73,8 @@ private:
 	void InputSkill2();
 	void MakeBullet(FVector pos, FRotator rot);
 
+	void Test(int32 num);
+
 	UFUNCTION()
 	void AddBullet(class ABullet* bullet);
 };

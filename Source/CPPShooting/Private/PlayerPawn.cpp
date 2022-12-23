@@ -107,6 +107,9 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &APlayerPawn::InputFire);
 	PlayerInputComponent->BindAction(TEXT("Skill1"), IE_Pressed, this, &APlayerPawn::InputSkill);
 	PlayerInputComponent->BindAction(TEXT("Skill2"), IE_Pressed, this, &APlayerPawn::InputSkill2);
+	
+	/*DECLARE_DELEGATE_OneParam(FTestDel, int32);
+	PlayerInputComponent->BindAction<FTestDel>(TEXT("Skill2"), IE_Pressed, this, &APlayerPawn::Test, 10);*/
 }
 
 //플레이어가 Horizontal에 입력한 값을 받는다
@@ -199,4 +202,9 @@ void APlayerPawn::MakeBullet(FVector pos, FRotator rot) {
 void APlayerPawn::AddBullet(class ABullet* bullet) {
 	UE_LOG(LogTemp, Warning, TEXT("AddBullet"));
 	mag.Add(bullet);
+}
+
+void APlayerPawn::Test(int32 num)
+{
+	UE_LOG(LogTemp, Warning, TEXT("APlayerPawn::Test -- %d"), num);
 }
